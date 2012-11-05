@@ -1,12 +1,11 @@
 <?php
 set_error_handler('handleError');
 
-$link = mysqli_connect('localhost', 'user', 'pass', "opendata_eu") or die('Could not connect: ' .$link->error);
+$link = mysqli_connect('localhost', 'yurukov1_opendat', 'GHmxSvJXYcqyNQVK', "opendata_eu") or die('Could not connect: ' .$link->error);
 $link->set_charset("utf8");
 
-$pid=$argv[1];
+$pid=$argv[1];echo "Working $pid...";
 
-echo "Working $pid...";
 $res = $link->query("SELECT ProjectID FROM projects WHERE ProjectID=$pid limit 1") or die("\n\nError executing query: ". $link->error);
 if ($res->num_rows>0) {
 	echo "skip\n";
@@ -46,7 +45,8 @@ function putDB($data) {
 	$data["ProjectNumber"] = $data["ProjectNumber"]=='' || $data["ProjectNumber"]=='---'  || $data["ProjectNumber"]==null ? "null" : "'".$link->escape_string($data["ProjectNumber"])."'";
 	$cleanerList = array("Title", "RealApproved", "ProjectStart", "ProjectEnd", "ProjectStatus", "ProjectDescription", "ActivityList");
 	foreach ($cleanerList as $cleanerKey) 
-		$data[$cleanerKey] = $data[$cleanerKey]=='' || $data[$cleanerKey]==null ? "null" : "'".$link->escape_string($data[$cleanerKey])."'";
+		$data[$cleanerKey] = $data[$cleanerKey]=='' || $data[$cleanerKey]==null || $data[$cleanerKey]=="----" ? 
+			"null" : "'".$link->escape_string($data[$cleanerKey])."'";
 	$cleanerNumList = array("TotalBudget", "CommonBudget", "BFP_EU_AssumedAmount", "BFP_EU_PaidAmount", "BFP_National_AssumedAmount", "BFP_National_PaidAmount", "Benef_AssumedAmount");
 	foreach ($cleanerNumList as $cleanerKey) 
 		$data[$cleanerKey] = intval($data[$cleanerKey]);
@@ -264,7 +264,7 @@ function cleanText($text) {
 	return trim(preg_replace("_\s+_"," ",$text));
 }
 function cleanDate($text) {
-	return substr($text,0,10);
+	return substr($text,6,4)."-".substr($text,3,2)."-".substr($text,0,2);
 }
 
 
