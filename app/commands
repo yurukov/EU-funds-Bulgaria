@@ -1,0 +1,8 @@
+php load.php
+for i in cache/page*; do php extract.php $i >> data1.csv; done
+grep "srchProjectInfo.aspx" data1.csv | sed "s_.*srchProjectInfo.aspx?id=__;s_'.*__" | sort -n -u > data1_ids.csv
+for i in `cat d`; do echo -n "loading "$i"..."; if [ -s "cache/project_"$i".html" ]; then echo "skip"; else wget -O "cache/project_"$i".html" -q "http://umispublic.minfin.bg/srchProjectInfo.aspx?id="$i; echo "done"; sleep 1s; fi done
+for i in ../cache/project_*; do echo $i | sed 's/.*_//;s/\..*//'; done | sort -n > ids
+for i in `cat ids`; do php trans.php $i; done
+
+
